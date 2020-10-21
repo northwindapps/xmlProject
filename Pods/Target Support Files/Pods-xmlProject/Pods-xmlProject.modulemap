@@ -1,0 +1,6 @@
+module Pods_xmlProject {
+  umbrella header "Pods-xmlProject-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module Pods_xmlProject_xmlProjectUITests {
+  umbrella header "Pods-xmlProject-xmlProjectUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
