@@ -20,7 +20,7 @@ class Sharedstring{
         var xml = ""
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>")
         xml.append(sharedstring)
-        FileManager.default.writeXml(folder: "xl/", filename: "sharedStrings.xml", content: xml)
+        FileManager.default.writeXmlsandBox(folder: "xl/", filename: "sharedStrings.xml", content: xml)
     }
 }
 

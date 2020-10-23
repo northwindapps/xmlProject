@@ -39,7 +39,7 @@ class App{
         xml.append(appversion)
         xml.append("</Properties>")
         
-        FileManager.default.writeXml(folder: "docProps/", filename: "app.xml", content: xml)
+        FileManager.default.writeXmlsandBox(folder: "docProps/", filename: "app.xml", content: xml)
     }
 }
 

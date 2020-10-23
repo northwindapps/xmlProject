@@ -114,7 +114,7 @@ class Theme{
         xml.append(extraClrSchemeLst)
         xml.append("</a:theme>")
         
-        FileManager.default.writeXml(folder: "xl/theme/", filename: "theme1.xml", content: xml)
+        FileManager.default.writeXmlsandBox(folder: "xl/theme/", filename: "theme1.xml", content: xml)
         
     }
 

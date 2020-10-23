@@ -36,6 +36,9 @@ class ContentType{
         Override.append("<Override PartName=\"/xl/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>")
         Override.append("<Override PartName=\"/xl/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml\"/>")
         Override.append("<Override PartName=\"/xl/sharedStrings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml\"/>")
+        
+        //TODO if calc arry is > 0
+//        Override.append("<Override PartName=\"/xl/calcChain.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.calcChain+xml\"/>")
     }
     
     func OverrideSheet(id:Int){
@@ -66,7 +69,7 @@ class ContentType{
         
         xml.append("</Types>")
         
-        FileManager.default.writeXml(folder: "", filename: "[Content_Types].xml", content: xml)
+        FileManager.default.writeXmlsandBox(folder: "", filename: "[Content_Types].xml", content: xml)
     }
 }
 

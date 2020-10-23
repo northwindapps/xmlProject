@@ -44,7 +44,7 @@ class Sheet{
     
     func export(sheetSize:Int){
         for i in 0..<sheetSize {
-            FileManager.default.writeXml(folder: "xl/worksheets/", filename: "sheet" + String(i+1) + ".xml", content: sheetGenerator(id: i))
+            FileManager.default.writeXmlsandBox(folder: "xl/worksheets/", filename: "sheet" + String(i+1) + ".xml", content: sheetGenerator(id: i))
         }
     }
 }

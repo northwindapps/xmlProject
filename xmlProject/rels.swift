@@ -45,7 +45,7 @@ class Rels {
         xml.append(writeRelation(id: 1))
         xml.append("</Relationships>")
         
-        FileManager.default.writeXml(folder: "_rels/", filename: ".rels", content: xml)
+        FileManager.default.writeXmlsandBox(folder: "_rels/", filename: ".rels", content: xml)
     
     }
     

@@ -16,8 +16,11 @@ class Adapter{
     var span:[String]
     let sheetSize:Int
     var rowSpan:[String]
+    //TODO Formula [String] if not put nil
+    var formulaContent:[String]
     
-    init(imp_content:[String],imp_location:[String],imp_sheetIdx:[Int],imp_sheetSize:Int) {
+    
+    init(imp_content:[String],imp_location:[String],imp_sheetIdx:[Int],imp_sheetSize:Int, imp_formula:[String]) {
         content = imp_content//tank,plane
         location = imp_location//A4,B2,A1
         sheetIdx = imp_sheetIdx//1,2,3,2,2
@@ -25,6 +28,7 @@ class Adapter{
         uniqueContent = [String]()
         span=[String]()//count = sheetSize
         rowSpan = [String]()//1:2,3:3 count = sheetSize
+        formulaContent = imp_formula
     }
     
     func getColumnNameNumber(columnName:String)->Int{
@@ -95,6 +99,31 @@ class Adapter{
         uniqueContent = ary
     }
     
+    func sortAlphabetical(sheet_sorted_location:[String],sheet_sorted_content:[String],sheet_sorted_formula:[String]) -> ([String],[String],[String]) {
+        
+        var sorted_location = [String]()
+        var sorted_content = [String]()
+        var sorted_formula = [String]()
+        //"B5","B4","A4","C4","B3","F4","D4"
+       
+        sorted_location = sheet_sorted_location
+        sorted_location.sort()
+        //https://www.hackingwithswift.com/example-code/arrays/how-to-sort-an-array-using-sort
+        
+        for i in 0..<sorted_location.count {
+            let idx = sheet_sorted_location.firstIndex(of:sorted_location[i])
+            
+            if idx != nil{
+                sorted_content.append(sheet_sorted_content[idx!])
+                sorted_formula.append(sheet_sorted_formula[idx!])
+            }
+        }
+        
+        
+        return (sorted_location,sorted_content,sorted_formula)
+        
+    }
+    
     func createContentArys()->([String],String){
         initSpanAry()
         initUniqueContentAry()
@@ -117,6 +146,7 @@ class Adapter{
             let sheet_spans = span[i]
             var sheet_content = [String]()
             var sheet_location = [String]()
+            var sheet_formula = [String]()
             let row_start :Int
             let row_end :Int
             let row_diff :Int
@@ -137,9 +167,15 @@ class Adapter{
                 if i+1 == sheetIdx[j] {//sheet1,sheet2,sheet3...
                     sheet_content.append(content[j])
                     sheet_location.append(location[j])
+                    sheet_formula.append(formulaContent[j])
                 }
             }
-            
+                
+            //TODO sort in alphabetical order
+            //"sheep","dog","crow"
+                (sheet_location,sheet_content,sheet_formula) = sortAlphabetical(sheet_sorted_location: sheet_location, sheet_sorted_content: sheet_content, sheet_sorted_formula: sheet_formula)
+                
+                
             if row_diff == 0 {
                 //TODO only one row
                 sheet_string = "<sheetData>"
@@ -149,16 +185,26 @@ class Adapter{
                     for l in 0..<sheet_location.count {
                         //1 == A1
                         if row_start == Int.parse(from: sheet_location[l])! {
+                            //TODO check formula
                             if Double(sheet_content[l]) == nil {
                                 let sharedLocation = uniqueContent.firstIndex(of: sheet_content[l])
+                               
                                 if (sharedLocation != nil){
                                     rowElement.append("<c r=" + "\"" + sheet_location[l] + "\" " + "t=\"s\"><v>" + String(sharedLocation!) + "</v></c>")
                                 }else{
                                     //TODO? shoud I do something?
                                 }
                             }else{
+                                if (sheet_formula[l] != "nil" ){
+
+                                rowElement.append("<c r=" + "\"" + sheet_location[l] + "\"><f>" + sheet_formula[l] + "</f><v>" + sheet_content[l] + "</v></c>")
+                                }else{
+                                                        
+                                
                                 rowElement.append("<c r=" + "\"" + sheet_location[l] + "\"><v>" + sheet_content[l] + "</v></c>")
+                                }
                             }
+                            
                         }
                     }
                     
@@ -176,6 +222,7 @@ class Adapter{
                     for l in 0..<sheet_location.count {
                         //1 == A1
                         if k == Int.parse(from: sheet_location[l])! {
+                            //TODO check formula
                             if Double(sheet_content[l]) == nil {
                                 let sharedLocation = uniqueContent.firstIndex(of: sheet_content[l])
                                 if (sharedLocation != nil){
@@ -184,7 +231,14 @@ class Adapter{
                                    
                                 }
                             }else{
+                                if (sheet_formula[l] != "nil" ){
+
+                                rowElement.append("<c r=" + "\"" + sheet_location[l] + "\"><f>" + sheet_formula[l] + "</f><v>" + sheet_content[l] + "</v></c>")
+                                }else{
+                                                        
+                                
                                 rowElement.append("<c r=" + "\"" + sheet_location[l] + "\"><v>" + sheet_content[l] + "</v></c>")
+                                }
                             }
                         }
                     }

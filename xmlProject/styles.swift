@@ -79,7 +79,7 @@ class Styles{
         xml.append(extLst)
         xml.append("</styleSheet>")
         
-        FileManager.default.writeXml(folder: "xl/", filename: "styles.xml", content: xml)
+        FileManager.default.writeXmlsandBox(folder: "xl/", filename: "styles.xml", content: xml)
     }
 }
 

@@ -19,13 +19,16 @@ class Service{
     
     var customFileName:String
     
-    init(imp_sheetNumber:Int,imp_stringContents:[String],imp_locations:[String],imp_idx:[Int],imp_fileName:String) {
+    var formulaContens:[String]
+    
+    init(imp_sheetNumber:Int,imp_stringContents:[String],imp_locations:[String],imp_idx:[Int],imp_fileName:String,imp_formula:[String]) {
         
         sheetNumber = imp_sheetNumber
         stringContents = imp_stringContents
         locations = imp_locations
         sheetIdx = imp_idx
         customFileName = imp_fileName
+        formulaContens = imp_formula
         
         //MinmumSheet number check
         if sheetNumber < 3{
@@ -40,7 +43,7 @@ class Service{
               let semaphore = DispatchSemaphore(value: 1)
               DispatchQueue.global().async {
                   
-                  let adp = Adapter(imp_content: self.stringContents, imp_location: self.locations, imp_sheetIdx: self.sheetIdx, imp_sheetSize:self.sheetNumber)
+                let adp = Adapter(imp_content: self.stringContents, imp_location: self.locations, imp_sheetIdx: self.sheetIdx, imp_sheetSize:self.sheetNumber,imp_formula:self.formulaContens)
               
                   var temp_ary = [String]()
                   var temp_string = ""
@@ -70,7 +73,7 @@ class Service{
                   Sheet(imp_sheetContents: temp_ary).export(sheetSize: self.sheetNumber)
                   
                   semaphore.wait()
-                  sleep(20)
+                  sleep(10)
                   semaphore.signal()
                   print("Finished")
                   
@@ -79,11 +82,34 @@ class Service{
              
          DispatchQueue.global().async {
           semaphore.wait()
-            sleep(20)
-            self.writeXlsx(path: (FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents"))!,fileName: self.customFileName)
+            sleep(10)
+            self.writeXlsxSandBox(path: (FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents"))!,fileName: self.customFileName)
               }
               semaphore.signal()
         
+    }
+    
+    func writeXlsxSandBox(path:URL,fileName:String){
+        do{
+                let sandBox = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+                
+                let driveURL = URL(fileURLWithPath: sandBox).appendingPathComponent("Documents")
+            
+            let files = try FileManager.default.contentsOfDirectory(at: driveURL, includingPropertiesForKeys: nil)
+            
+            let zipFilePath = try Zip.quickZipFiles(files, fileName: "outputInAppContainer") // Zip
+            
+            if FileManager.default.fileExists(atPath: zipFilePath.path) {
+                //It's odd. It created file on the root directory.
+                print("Done: ", zipFilePath.path)
+                
+                FileManager.default.secureCopyItem(at: URL(fileURLWithPath:zipFilePath.path), to:URL(fileURLWithPath: (path.appendingPathComponent(fileName).path)))
+            }
+        }
+        catch
+        {
+            print("Something went wrong")
+        }
     }
     
     func writeXlsx(path:URL,fileName:String){
@@ -152,17 +178,46 @@ extension FileManager {
         }
     }
     
+    open func writeXmlsandBox(folder:String,filename:String,content:String) -> Bool{
+          let sandBox = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+        
+        let driveURL = URL(fileURLWithPath: sandBox).appendingPathComponent("Documents").appendingPathComponent(folder)
+                
+        print(driveURL.absoluteString as Any)
+                
+        //        https://stackoverflow.com/questions/26931355/how-to-create-directory-using-swift-code-nsfilemanager/26931481
+                
+        do {
+            if !FileManager.default.fileExists(atPath: driveURL.absoluteString) {
+                try FileManager.default.createDirectory(at: driveURL, withIntermediateDirectories: true, attributes: nil)
+                }
+            
+            if (NSData(contentsOf: driveURL.appendingPathComponent(filename)) != nil) {
+                               
+                try FileManager.default.removeItem(at: driveURL.appendingPathComponent(filename))
+                print("overwritten",driveURL)
+                }
+
+         
+            try content.write(to: driveURL.appendingPathComponent(filename), atomically: true, encoding: .utf8)
+              
+                
+            return true
+        
+        } catch {
+            print(error.localizedDescription);
+            
+            return false
+                          
+        }
+    }
+    
     open func deleteWorksheets() -> Bool{
         let driveURL = FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents").appendingPathComponent("xl/worksheets/")
                 
         print(driveURL?.absoluteString as Any)
                 
         //        https://stackoverflow.com/questions/26931355/how-to-create-directory-using-swift-code-nsfilemanager/26931481
-                
-        
-               
-            
-
                 
             do {
                 let items = try FileManager.default.contentsOfDirectory(atPath: driveURL!.path)
@@ -171,8 +226,7 @@ extension FileManager {
                     try FileManager.default.removeItem(at: driveURL!.appendingPathComponent(item))
                      print(item)
                 }
-                
-                
+
                    
             } catch {
                                    
@@ -188,18 +242,6 @@ extension FileManager {
     
 }
 
-class Document: UIDocument {
-    var text: String? = ""
-
-    override func contents(forType typeName: String) throws -> Any {
-        text?.data(using: .utf8) ?? Data()
-    }
-
-    override func load(fromContents contents: Any, ofType typeName: String?) throws {
-        guard let contents = contents as? Data else { return }
-        text = String(data: contents, encoding: .utf8)
-    }
-}
 
 extension StringProtocol {
     subscript(offset: Int) -> Character {

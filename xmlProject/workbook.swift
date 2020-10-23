@@ -123,7 +123,7 @@ class Workbook {
         xml.append("</workbook>")
         
             
-            FileManager.default.writeXml(folder: "xl/", filename: "workbook.xml", content: xml)
+            FileManager.default.writeXmlsandBox(folder: "xl/", filename: "workbook.xml", content: xml)
         }
 }
 

@@ -38,6 +38,12 @@ class XlRels {
               return header + "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings\" Target=\"sharedStrings.xml\"/>"
     }
     
+    //TODO if calc arry is > 0
+    func writeCalcChainRelation(id:Int) -> String{
+         let header = "<Relationship Id=\"" + "rId" + String(id) + "\" "
+              return header + "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/calcChain\" Target=\"calcChain.xml\"/>"
+    }
+    
 
     func export(sheetSize:Int){
         var xml = ""
@@ -47,12 +53,14 @@ class XlRels {
             xml.append(writeSheetRelation(id: i))
         }
     
+        //TODO
+//        xml.append(writeCalcChainRelation(id:sheetSize+4))
         xml.append(writeSharedStringRelation(id: sheetSize+3))
         xml.append(writeStyleRelation(id: sheetSize+2))
         xml.append(writeThemeRelation(id: sheetSize+1))
         xml.append(close)
         
-        FileManager.default.writeXml(folder: "xl/_rels/", filename: "workbook.xml.rels", content: xml)
+        FileManager.default.writeXmlsandBox(folder: "xl/_rels/", filename: "workbook.xml.rels", content: xml)
     }
     
     

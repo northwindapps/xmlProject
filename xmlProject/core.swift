@@ -60,7 +60,7 @@ class Core{
         xml.append(cp_contentstatus)
         xml.append("</cp:coreProperties>")
         
-        FileManager.default.writeXml(folder: "docProps/", filename: "core.xml", content: xml)
+        FileManager.default.writeXmlsandBox(folder: "docProps/", filename: "core.xml", content: xml)
     }
 }
 
